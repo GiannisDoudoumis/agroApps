@@ -13,19 +13,33 @@ class WeatherController extends Controller
 {
     public function actionIndex()
     {
-        $locations = Location::find()->all(); // Get all locations
+        // Get the location ID from the GET request
+        $selectedLocationId = Yii::$app->request->get('location');
+
+        $allLocationsForSelect = Location::find()->select('id, name')->all();
+
+        // Fetch all locations
+        $locationsCursor = Location::find();
+
+        // If a location is selected, filter by that location
+        if ($selectedLocationId) {
+            $locationsCursor = $locationsCursor->andWhere(['id' => $selectedLocationId]);
+        }
 
         // Fetch weather data for each location from all available APIs
         $weatherData = [];
-        foreach ($locations as $location) {
+        foreach ($locationsCursor->each() as $location) {
             $weatherData[$location->id] = WeatherData::getWeatherDataFromApis($location);
         }
 
         return $this->render('index', [
-            'locations' => $locations,
-            'weatherData' => $weatherData
+            'allLocationsForSelect' => $allLocationsForSelect,
+            'locations' => $locationsCursor->all(),
+            'weatherData' => $weatherData,
+            'selectedLocationId' => $selectedLocationId,  // Pass the selected location ID
         ]);
     }
+
 
 
 

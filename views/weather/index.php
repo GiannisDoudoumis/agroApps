@@ -1,25 +1,42 @@
 <?php
 use yii\helpers\Html;
 use yii\helpers\Json;
+use yii\helpers\ArrayHelper;
 
 $this->title = 'Weather';
 ?>
 
 <h1>Weather</h1>
-
+<!-- Location Filter Form -->
+<div class="location-filter">
+    <?= Html::beginForm('', 'get', ['class' => 'form-inline', 'id' => 'locationFilterForm']) ?>
+    <?= Html::label('Select Location: ', 'location-select', ['class' => 'mr-2']) ?>
+    <?= Html::dropDownList(
+        'location',
+        $selectedLocationId ?? null,  // The selected location from the controller
+        ArrayHelper::map($allLocationsForSelect, 'id', 'name'), // Using all locations here
+        [
+            'prompt' => 'All Locations', // This will show "All Locations" as the default option
+            'class' => 'form-control',
+            'id' => 'location-select',  // Add an ID for easy selection in JavaScript
+        ]
+    ) ?>
+    <?= Html::endForm() ?>
+</div>
 
 <table class="table table-bordered">
     <tr>
         <th>Name</th>
-        <th>Coordinates</th>
+<!--        <th>Coordinates</th>-->
         <th>Weather Data</th>
         <th>Actions</th>
     </tr>
+
     <?php foreach ($locations as $location): ?>
         <tr>
             <!-- Reduced width for Name and Coordinates columns -->
             <td class="location-name"><?= Html::encode($location->name) ?></td>
-            <td class="location-coordinates"><?= Html::encode("{$location->latitude}, {$location->longitude}") ?></td>
+<!--            <td class="location-coordinates">--><?php //= Html::encode("{$location->latitude}, {$location->longitude}") ?><!--</td>-->
             <td>
                 <div class="weather-data-container">
                     <?php
@@ -234,3 +251,21 @@ $this->title = 'Weather';
         </tr>
     <?php endforeach; ?>
 </table>
+<script>
+    document.getElementById('location-select').addEventListener('change', function() {
+        var locationId = this.value;
+        var form = document.getElementById('locationFilterForm');
+
+        // Prevent default form submission behavior
+        event.preventDefault();
+
+        // Clear the query parameters and only append the selected location
+        var url = new URL(window.location.href);
+        url.searchParams.delete('location'); // Ensure any existing 'location' parameter is removed
+        url.searchParams.append('location', locationId); // Add the new location parameter
+
+        // Redirect to the updated URL with the new location parameter
+        window.location.href = url.toString();
+    });
+
+</script>
