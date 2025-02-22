@@ -18,7 +18,8 @@ class m250221_225836_create_locations_table extends Migration
             'latitude' => $this->float()->notNull(),
             'longitude' => $this->float()->notNull(),
             'created_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'),
-        ]);
+        ], 'CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
+
     }
 
     public function safeDown()

@@ -28,20 +28,6 @@ class WeatherController extends Controller
     }
 
 
-    public function actionCreate()
-    {
-        $model = new Location();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            Yii::$app->session->setFlash('success', 'Location saved successfully.');
-            return $this->redirect(['index']);
-        }
-
-        return $this->render('create', [
-            'model' => $model,
-        ]);
-    }
-
 
     public function actionRefreshWeather($id)
     {

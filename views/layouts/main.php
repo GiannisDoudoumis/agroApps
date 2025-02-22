@@ -40,8 +40,8 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav'],
         'items' =>  [  // For logged-in users, show all the navigation links
-                ['label' => 'Weather-Locations', 'url' => ['/weather/index']],
-
+                ['label' => 'Weather', 'url' => ['/weather/index']],
+            ['label' => 'Locations', 'url' => ['/location/index']],
 
             ]
     ]);

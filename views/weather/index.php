@@ -2,12 +2,11 @@
 use yii\helpers\Html;
 use yii\helpers\Json;
 
-$this->title = 'Weather Locations';
+$this->title = 'Weather';
 ?>
 
-<h1>Weather Locations</h1>
+<h1>Weather</h1>
 
-<p><?= Html::a('Add New Location', ['create'], ['class' => 'btn btn-success']) ?></p>
 
 <table class="table table-bordered">
     <tr>

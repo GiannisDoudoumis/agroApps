@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\components\WeatherService;
 use Yii;
 
 /**
@@ -64,4 +65,27 @@ class Location extends \yii\db\ActiveRecord
         return $this->hasMany(WeatherData::class, ['location_id' => 'id']);
     }
 
+    /**
+     * Trigger an action after saving the model
+     *
+     * @param bool $insert Whether this is an insert or update
+     * @param array $changedAttributes The changed attributes
+     */
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+
+        // Your custom logic here
+        // For example, you want to trigger an action in the LocationController
+        if ($insert) {
+            $service = new WeatherService();
+            try {
+                $service->fetchWeatherData($this->id);
+            } catch (\Exception $e) {
+                Yii::$app->session->setFlash('error',  $e->getMessage());
+
+            }
+
+        }
+    }
 }

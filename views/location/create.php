@@ -43,12 +43,16 @@ $this->registerJsFile('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', ['depen
             document.getElementById("longitude").value = lng;
         }
 
+        // Update the name input with just the place's name (not full address)
         function updateLocationName(lat, lng) {
             fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
                 .then(response => response.json())
                 .then(data => {
-                    if (data.display_name) {
-                        document.getElementById("location-name").value = data.display_name;
+                    if (data.address && data.address.city) {
+                        // Use just the city name or the most relevant name part
+                        document.getElementById("location-name").value = data.address.city || data.address.town || data.address.village || "Unnamed Location";
+                    } else {
+                        document.getElementById("location-name").value = "Unnamed Location";
                     }
                 })
                 .catch(error => console.error('Error fetching location name:', error));
@@ -88,6 +92,8 @@ $this->registerJsFile('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', ['depen
                                 marker = L.marker([lat, lon]).addTo(map);
                             }
                             updateLatLng(lat, lon);
+                            // Set the name field to just the name, not full address
+                            document.getElementById("location-name").value = data[0].display_name.split(',')[0]; // Get the first part of the address (usually the name)
                         } else {
                             alert("Location not found. Try a different name.");
                         }
