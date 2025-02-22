@@ -48,9 +48,11 @@ $this->registerJsFile('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', ['depen
             fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
                 .then(response => response.json())
                 .then(data => {
-                    if (data.address && data.address.city) {
-                        // Use just the city name or the most relevant name part
-                        document.getElementById("location-name").value = data.address.city || data.address.town || data.address.village || "Unnamed Location";
+                    if (data.address) {
+                        // Check for multiple possible address components
+                        let locationName = data.address.city || data.address.town || data.address.village ||
+                            data.address.state || data.address.country || "Unnamed Location";
+                        document.getElementById("location-name").value = locationName;
                     } else {
                         document.getElementById("location-name").value = "Unnamed Location";
                     }

@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\components\FetchWeatherService;
 use app\components\WeatherApiService;
 use Yii;
 
@@ -76,9 +77,11 @@ class Location extends \yii\db\ActiveRecord
         parent::afterSave($insert, $changedAttributes);
 
         if ($insert) {
-            $service = new WeatherApiService();
+
+
+            $service = new FetchWeatherService();
             try {
-                $service->fetchWeatherData($this->id);
+                $service->fetchWeatherFromApis($this->id);
             } catch (\Exception $e) {
                 Yii::$app->session->setFlash('error',  $e->getMessage());
 

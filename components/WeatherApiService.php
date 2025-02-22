@@ -64,7 +64,7 @@ class WeatherApiService
     private function parseHourlyData($forecast)
     {
         $hourlyWeatherData = [];
-         
+
         foreach ($forecast['forecastday'] as $forecastDay) {
 
 

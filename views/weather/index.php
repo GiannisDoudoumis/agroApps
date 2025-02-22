@@ -101,31 +101,36 @@ $this->title = 'Weather';
                                 </thead>
                                 <tbody>
                                 <?php
+                                $groupedHourlyData = [];
 
-
-
-                                // Render hourly data with collapsible rows for each day
+                                // Group hourly data by day
                                 foreach ($hourlyData as $hourly) {
+                                    $date = substr($hourly['timestamp'], 0, 10); // Extract the date (YYYY-MM-DD)
+                                    $groupedHourlyData[$date][] = $hourly;
+                                }
 
-                                    // Make the button ID unique for both location, API source, and date
-                                    $buttonId = "toggle-hours-{$location->id}-{$apiSource}-{$hourly['timestamp']}"; // Unique button ID per location, API source, and date
-                                    $dataId = "hours-{$location->id}-{$apiSource}-{$hourly['timestamp']}"; // Unique data ID for collapsible section
+                                foreach ($groupedHourlyData as $date => $hourlyEntries) {
+                                    // Unique IDs for collapsing rows
+                                    $toggleButtonId = "toggle-hours-{$location->id}-{$apiSource}-{$date}";
+                                    $dataContainerId = "hours-{$location->id}-{$apiSource}-{$date}";
 
-                                    echo "<tr><td >" .  $hourly['timestamp']  . "</td><td colspan='4'>
-                                    <button type='button' class='btn btn-info' id='{$buttonId}' onclick='toggleHours(\"{$dataId}\")'>Show/Hide Hours</button>
-                                    <div id='{$dataId}' style='display:none; margin-top:10px;' class='hourly-data'>";
+                                    echo "<tr>";
+                                    echo "<td><strong>" . Html::encode($date) . "</strong></td>";
+                                    echo "<td colspan='4'>
+                <button type='button' class='btn btn-info' id='{$toggleButtonId}' onclick='toggleHours(\"{$dataContainerId}\")'>
+                    Show/Hide Hours
+                </button>
+                <div id='{$dataContainerId}' style='display:none; margin-top:10px;' class='hourly-data'>";
 
-                                    // Output hourly data for each day, skipping every 3rd hour (index 0, 3, 6, ...)
-
-
-                                            echo "<div class='hour-row'>";
-                                            echo "<div><strong>Time:</strong> " .$hourly['timestamp']. "</div>";
-                                            echo "<div><strong>Temp:</strong> " . Html::encode($hourly['temperature'] ?? 'N/A') . "°C</div>";
-                                            echo "<div><strong>Hum:</strong> " . Html::encode( $hourly['humidity'] ?? 'N/A') . "%</div>";
-                                            echo "<div><strong>Wind Sp: </strong> " . Html::encode($hourly['windSpeed'] ?? 'N/A') . " km/h</div>";
-                                            echo "</div>";
-
-
+                                    // Display hourly data for this day
+                                    foreach ($hourlyEntries as $hourly) {
+                                        echo "<div class='hour-row'>";
+                                        echo "<div><strong>Time:</strong> " . substr($hourly['timestamp'], 11, 5) . "</div>";
+                                        echo "<div><strong>Temp:</strong> " . Html::encode($hourly['temperature'] ?? 'N/A') . "°C</div>";
+                                        echo "<div><strong>Hum:</strong> " . Html::encode($hourly['humidity'] ?? 'N/A') . "%</div>";
+                                        echo "<div><strong>Wind Sp:</strong> " . Html::encode($hourly['windSpeed'] ?? 'N/A') . " km/h</div>";
+                                        echo "</div>";
+                                    }
 
                                     echo "</div></td></tr>";
                                 }
