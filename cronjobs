@@ -1,0 +1,2 @@
+# minute hour day month weekday user command
+0 5 * * * root php /var/www/html/yii weather/fetch-weather-for-all-locations >> /var/www/html/runtime/logs/cron.log 2>&1
