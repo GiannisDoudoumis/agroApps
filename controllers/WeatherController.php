@@ -2,7 +2,8 @@
 
 namespace app\controllers;
 
-use app\components\WeatherService;
+use app\components\FetchWeatherService;
+use app\components\WeatherApiService;
 use Yii;
 use yii\web\Controller;
 use yii\helpers\Json;
@@ -46,9 +47,9 @@ class WeatherController extends Controller
     public function actionRefreshWeather($id)
     {
 
-        $service = new WeatherService();
+        $fetchWeatherService = new FetchWeatherService();
         try {
-            $service->fetchWeatherData($id);
+            $fetchWeatherService->fetchWeatherFromApis($id);
         } catch (\Exception $e) {
             Yii::$app->session->setFlash('error',  $e->getMessage());
             return $this->redirect(['index']);

@@ -2,7 +2,7 @@
 
 namespace app\models;
 
-use app\components\WeatherService;
+use app\components\WeatherApiService;
 use Yii;
 
 /**
@@ -74,11 +74,9 @@ class Location extends \yii\db\ActiveRecord
     public function afterSave($insert, $changedAttributes)
     {
         parent::afterSave($insert, $changedAttributes);
-
-        // Your custom logic here
-        // For example, you want to trigger an action in the LocationController
+ 
         if ($insert) {
-            $service = new WeatherService();
+            $service = new WeatherApiService();
             try {
                 $service->fetchWeatherData($this->id);
             } catch (\Exception $e) {
