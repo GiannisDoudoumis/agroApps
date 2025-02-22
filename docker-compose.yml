@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: agroApp
+    volumes:
+      - .:/var/www/html
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+      - phpmyAdmin
+    restart: always
+
+  db:
+    image: mysql:5.7
+    container_name: agro_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234   # root password
+      MYSQL_DATABASE: agroApp   # name of the default database to create
+      MYSQL_USER: user             # user to create with access to the database
+      MYSQL_PASSWORD: 1234         # password for the 'user'
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  phpmyAdmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyAdmin
+    restart: always
+    environment:
+      PMA_HOST: db
+      PMA_USER: user
+      PMA_PASSWORD: 1234  # match the password of the MySQL 'user'
+    ports:
+      - "8081:80"
+    depends_on:
+      - db
+
+volumes:
+  db_data:
