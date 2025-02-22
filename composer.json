@@ -21,6 +21,8 @@
         "phpoffice/phpspreadsheet": "^4.0",
         "yiisoft/yii2-jui": "^2.0",
         "yiisoft/yii2-httpclient": "^2.0"
+        "2amigos/yii2-google-maps-library": "^1.0",
+        "guzzlehttp/guzzle": "^4.2"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",
@@ -37,7 +39,8 @@
     "autoload": {
         "psr-4": {
             "app\\": "src/",
-            "helpers\\": "helpers/"
+            "helpers\\": "helpers/",
+            "app\\enums\\": "enums/"
         }
     },
     "config": {

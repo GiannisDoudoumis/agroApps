@@ -39,22 +39,10 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
     // Show only the Login and SignUp links for guests, and the full navbar for logged-in users
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav'],
-        'items' => Yii::$app->user->isGuest
-            ? [  // For guest users, show Login and Sign Up only
-                ['label' => 'Login', 'url' => ['/site/login']],
-                ['label' => 'Sign Up', 'url' => ['/site/signup']],
-            ]
-            : [  // For logged-in users, show all the navigation links
-                ['label' => 'Weather', 'url' => ['/weather/index']],
+        'items' =>  [  // For logged-in users, show all the navigation links
+                ['label' => 'Weather-Locations', 'url' => ['/weather/index']],
 
-                '<li class="nav-item">'
-                . Html::beginForm(['/site/logout'])
-                . Html::submitButton(
-                    'Logout (' . Yii::$app->user->identity->username . ')',
-                    ['class' => 'nav-link btn btn-link logout']
-                )
-                . Html::endForm()
-                . '</li>',
+
             ]
     ]);
 

@@ -70,4 +70,32 @@ class WeatherData extends \yii\db\ActiveRecord
         return $this->hasOne(Location::class, ['id' => 'location_id']);
     }
 
+    /**
+     * Fetch weather data from all APIs for a specific location.
+     *
+     * @param Location $location
+     * @return array
+     */
+    public static function getWeatherDataFromApis(Location $location)
+    {
+        $weatherData = [];
+
+        // Get the list of weather APIs from config
+        $weatherApis = Yii::$app->params['weather_api_urls'];
+
+        foreach ($weatherApis as $apiName => $apiUrl) {
+            // Fetch weather data for each API source dynamically
+            $data = self::find()
+                ->where(['location_id' => $location->id, 'api_source' => $apiName])
+                ->orderBy(['date' => SORT_ASC])
+                ->limit(3) // Get data for 3 days
+                ->all();
+
+            // Group data by API source
+            $weatherData[$apiName] = $data;
+        }
+
+        return $weatherData;
+    }
+
 }

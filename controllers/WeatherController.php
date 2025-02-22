@@ -2,128 +2,62 @@
 
 namespace app\controllers;
 
-use app\models\driver\Driver;
+use app\components\WeatherService;
 use Yii;
-use yii\filters\AccessControl;
-use yii\filters\VerbFilter;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
-
-// Make sure to have the Driver model
+use yii\helpers\Json;
+use app\models\Location;
+use app\models\WeatherData;
 
 class WeatherController extends Controller
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function behaviors()
-    {
-        return [
-            'access' => [
-                'class' => AccessControl::class,
-                'only' => ['create', 'update', 'index'],
-                'rules' => [
-                    [
-                        'actions' => ['create', 'update', 'index'],
-                        'allow' => true,
-                        'roles' => ['@'], // Only authenticated users can access these actions
-                    ],
-                ],
-            ],
-            'verbs' => [
-                'class' => VerbFilter::class,
-                'actions' => [
-                    'logout' => ['post'],
-                ],
-            ],
-        ];
-    }
-
-    /**
-     * Lists all Driver models.
-     * Provides search functionality.
-     *
-     * @return string
-     */
     public function actionIndex()
     {
-        $searchModel = new Driver();  // Assuming Driver is your model
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams); // Use search query params
+        $locations = Location::find()->all(); // Get all locations
+
+        // Fetch weather data for each location from all available APIs
+        $weatherData = [];
+        foreach ($locations as $location) {
+            $weatherData[$location->id] = WeatherData::getWeatherDataFromApis($location);
+        }
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
+            'locations' => $locations,
+            'weatherData' => $weatherData
         ]);
     }
 
-    /**
-     * Creates a new Driver model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     *
-     * @return mixed
-     */
+
     public function actionCreate()
     {
-        $model = new Driver();
+        $model = new Location();
 
-        // If form is submitted and valid
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            // Redirect to the index page or any other page after successfully creating the driver
-            Yii::$app->session->setFlash('success', 'Driver created successfully.');
+            Yii::$app->session->setFlash('success', 'Location saved successfully.');
             return $this->redirect(['index']);
         }
 
-        // Render the create view with model
         return $this->render('create', [
             'model' => $model,
         ]);
     }
-    /**
-     * Updates an existing Driver model.
-     * If update is successful, the browser will be redirected to the 'index' page.
-     *
-     * @param int $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionUpdate($id)
-    {
-        $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            Yii::$app->session->setFlash('success', 'Driver updated successfully.');
+
+    public function actionRefreshWeather($id)
+    {
+
+        $service = new WeatherService();
+        try {
+            $service->fetchWeatherData($id);
+        } catch (\Exception $e) {
+            Yii::$app->session->setFlash('error',  $e->getMessage());
             return $this->redirect(['index']);
+
         }
-
-        return $this->render('update', [
-            'model' => $model,
-        ]);
-    }
-
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete(); // Delete the model from the database
-
-        // Set a success flash message
-        Yii::$app->session->setFlash('success', 'Driver deleted successfully.');
-
-        // Redirect to the index page
+        Yii::$app->session->setFlash('success', 'Weather data refreshed');
         return $this->redirect(['index']);
+
     }
 
-    /**
-     * Finds the Driver model based on its primary key value.
-     *
-     * @param int $id
-     * @return Driver the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModel($id)
-    {
-        if (($model = Driver::findOne($id)) !== null) {
-            return $model;
-        }
 
-        throw new NotFoundHttpException('The requested page does not exist.');
-    }
 }
