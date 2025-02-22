@@ -87,15 +87,17 @@ class WeatherData extends \yii\db\ActiveRecord
             // Fetch weather data for each API source dynamically
             $data = self::find()
                 ->where(['location_id' => $location->id, 'api_source' => $apiName])
-                ->orderBy(['date' => SORT_ASC])
-                ->limit(3) // Get data for 3 days
-                ->all();
+//                ->orderBy(['date' => SORT_DESC])
+                ->one();
 
-            // Group data by API source
-            $weatherData[$apiName] = $data;
+            // Store data only if available
+            if ($data) {
+                $weatherData[$apiName] = $data;
+            }
         }
 
         return $weatherData;
     }
+
 
 }

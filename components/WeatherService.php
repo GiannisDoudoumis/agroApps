@@ -24,7 +24,7 @@ class WeatherService
 
         foreach ($locationCursor->each() as $location) {
             $this->fetchFromOpenMeteo($location);
-            $this->fetchFromWeatherAPI($location);
+        //    $this->fetchFromWeatherAPI($location);
         }
 
 
@@ -69,7 +69,7 @@ class WeatherService
         }
         if (!empty($data)) {
 
-             //  $this->storeWeatherData($location->id, WeatherApisEnum::OPEN_METEO->value, $data);
+              $this->storeWeatherData($location->id, WeatherApisEnum::OPEN_METEO->value, $data);
 
         }
         curl_close($ch);
@@ -115,7 +115,7 @@ class WeatherService
         } else {
             // Decode the JSON response
             $data = json_decode($response, true);
-
+print_r(json_encode($data));die;
             // Handle the response (e.g., store the data)
             if (!empty($data)) { 
                 $this->storeWeatherData($location->id, [WeatherApisEnum::WEATHER_API->value], $data);
@@ -126,6 +126,7 @@ class WeatherService
 
     private function storeWeatherData($locationId, $apiSource, $data)
     {
+
         $weather = new WeatherData();
         $weather->location_id = $locationId;
         $weather->api_source = $apiSource;
