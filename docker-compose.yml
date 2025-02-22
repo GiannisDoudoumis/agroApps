@@ -18,7 +18,7 @@ services:
     container_name: agro_db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}  # Using env variables from main-secrets.env file
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}  # Using env variables from .env file
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}

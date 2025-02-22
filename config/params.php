@@ -3,7 +3,7 @@ use app\enums\WeatherApisEnum;
 use Symfony\Component\Dotenv\Dotenv;
 
 $dotenv = new Dotenv();
-$dotenv->load(__DIR__ . '/../main-secrets.env');  // Ensure correct path to main-secrets.env
+$dotenv->load(__DIR__ . '/../.env');  // Ensure correct path to .env
 
 return [
     'adminEmail' => 'admin@example.com',
