@@ -1,6 +1,10 @@
 # Use a base image (this is a common one for Yii2 apps with PHP and Apache)
 FROM yiisoftware/yii2-php:8.1-apache
 
+# Install necessary CA certificates to fix SSL issues with Composer
+RUN apt-get update && apt-get install -y ca-certificates
+RUN update-ca-certificates
+
 # Copy the 000-default.conf file to the correct location
 COPY ./000-default.conf /etc/apache2/sites-available/000-default.conf
 

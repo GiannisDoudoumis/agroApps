@@ -18,10 +18,10 @@ services:
     container_name: agro_db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: 1234   # root password
-      MYSQL_DATABASE: agroApp   # name of the default database to create
-      MYSQL_USER: user             # user to create with access to the database
-      MYSQL_PASSWORD: 1234         # password for the 'user'
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}  # Using env variables from main-secrets.env file
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "3306:3306"
     volumes:
@@ -32,9 +32,9 @@ services:
     container_name: phpmyAdmin
     restart: always
     environment:
-      PMA_HOST: db
-      PMA_USER: user
-      PMA_PASSWORD: 1234  # match the password of the MySQL 'user'
+      PMA_HOST: ${PMA_HOST}
+      PMA_USER: ${PMA_USER}
+      PMA_PASSWORD: ${PMA_PASSWORD}  # Matching the password of the MySQL 'user'
     ports:
       - "8081:80"
     depends_on:
