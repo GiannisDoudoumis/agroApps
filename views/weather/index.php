@@ -17,8 +17,9 @@ $this->title = 'Weather';
     </tr>
     <?php foreach ($locations as $location): ?>
         <tr>
-            <td><?= Html::encode($location->name) ?></td>
-            <td><?= Html::encode("{$location->latitude}, {$location->longitude}") ?></td>
+            <!-- Reduced width for Name and Coordinates columns -->
+            <td class="location-name"><?= Html::encode($location->name) ?></td>
+            <td class="location-coordinates"><?= Html::encode("{$location->latitude}, {$location->longitude}") ?></td>
             <td>
                 <div class="weather-data-container">
                     <?php
@@ -46,7 +47,7 @@ $this->title = 'Weather';
                             <table class="table">
                                 <thead>
                                 <tr>
-                                    <th>Date</th>
+                                    <th style="width: 30%;">Date</th>
                                     <th>Max Temperature (°C)</th>
                                     <th>Precipitation (mm)</th>
                                 </tr>
@@ -216,8 +217,16 @@ $this->title = 'Weather';
                         display: inline-block;
                         width: 50%;
                     }
-                </style>
 
+                    /* Set width for name and coordinates columns */
+                    .location-name {
+                        width: 12%; /* Adjust this value to your preference */
+                    }
+
+                    .location-coordinates {
+                        width: 12%; /* Adjust this value to your preference */
+                    }
+                </style>
             </td>
             <td>
                 <?= Html::a('Refresh Weather', ['refresh-weather', 'id' => $location->id], ['class' => 'btn btn-warning btn-sm']) ?>
