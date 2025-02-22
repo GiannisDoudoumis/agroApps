@@ -51,6 +51,7 @@ $this->title = 'Weather';
                         try {
                             $dailyData = !empty($data->daily_data) ? Json::decode($data->daily_data) : [];
                             $hourlyData = !empty($data->hourly_data) ? Json::decode($data->hourly_data) : [];
+
                         } catch (\Exception $e) {
                             echo "<p>Error decoding weather data for " . Html::encode($apiSource) . ".</p>";
                             continue;
@@ -70,26 +71,14 @@ $this->title = 'Weather';
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <?php if (!empty($dailyData['time']) && is_array($dailyData['time'])): ?>
+                                <?php if (!empty($dailyData)): ?>
                                     <?php
-                                    $today = date('Y-m-d'); // Get today's date
-                                    $dailyDates = $dailyData['time'];
 
-                                    // Filter the daily data to include only today and the next 3 days
-                                    $filteredDates = array_filter($dailyDates, function($date) use ($today) {
-                                        return (strtotime($date) >= strtotime($today) && strtotime($date) < strtotime($today . ' +4 days'));
-                                    });
-
-                                    // Sort the dates in ascending order
-                                    usort($filteredDates, function($a, $b) {
-                                        return strtotime($a) - strtotime($b); // Sort by date
-                                    });
-
-                                    foreach ($filteredDates as $index => $date): ?>
+                                    foreach ($dailyData as $data): ?>
                                         <tr>
-                                            <td><?= Html::encode($date) ?></td>
-                                            <td><?= Html::encode($dailyData['temperature_2m_max'][$index] ?? 'N/A') ?></td>
-                                            <td><?= Html::encode($dailyData['precipitation_sum'][$index] ?? 'N/A') ?></td>
+                                            <td><?= Html::encode($data['date']) ?></td>
+                                            <td><?= Html::encode($data['temperatureMax'] ?? 'N/A') ?></td>
+                                            <td><?= Html::encode($data['precipitation']  ?? 'N/A') ?></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 <?php else: ?>
@@ -112,57 +101,31 @@ $this->title = 'Weather';
                                 </thead>
                                 <tbody>
                                 <?php
-                                // Initialize variables
-                                $hourlyTimes = $hourlyData['time'] ?? [];
-                                $hourlyTemps = $hourlyData['temperature_2m'] ?? [];
-                                $hourlyHumidity = $hourlyData['relative_humidity_2m'] ?? [];
-                                $hourlyWindSpeed = $hourlyData['wind_speed_10m'] ?? [];
 
-                                $previousDate = '';
-                                $dateColumns = [];
 
-                                // Collect hourly data for today and the next 3 days
-                                foreach ($hourlyTimes as $index => $time) {
-                                    $currentDate = substr($time, 0, 10); // Extract date part (YYYY-MM-DD)
-
-                                    // Only show each date once and group hours under it, and ensure we only show up to 4 days
-                                    if ($currentDate !== $previousDate) {
-                                        if ($previousDate !== '') {
-                                            // End previous group of hours
-                                        }
-                                        $previousDate = $currentDate;
-                                        if (strtotime($currentDate) >= strtotime($today) && strtotime($currentDate) < strtotime($today . ' +4 days')) {
-                                            $dateColumns[] = $currentDate;
-                                        }
-                                    }
-                                }
 
                                 // Render hourly data with collapsible rows for each day
-                                foreach ($dateColumns as $date) {
-                                    // Make the button ID unique for both location, API source, and date
-                                    $buttonId = "toggle-hours-{$location->id}-{$apiSource}-{$date}"; // Unique button ID per location, API source, and date
-                                    $dataId = "hours-{$location->id}-{$apiSource}-{$date}"; // Unique data ID for collapsible section
+                                foreach ($hourlyData as $hourly) {
 
-                                    echo "<tr><td >" . Html::encode($date) . "</td><td colspan='4'>
+                                    // Make the button ID unique for both location, API source, and date
+                                    $buttonId = "toggle-hours-{$location->id}-{$apiSource}-{$hourly['timestamp']}"; // Unique button ID per location, API source, and date
+                                    $dataId = "hours-{$location->id}-{$apiSource}-{$hourly['timestamp']}"; // Unique data ID for collapsible section
+
+                                    echo "<tr><td >" .  $hourly['timestamp']  . "</td><td colspan='4'>
                                     <button type='button' class='btn btn-info' id='{$buttonId}' onclick='toggleHours(\"{$dataId}\")'>Show/Hide Hours</button>
                                     <div id='{$dataId}' style='display:none; margin-top:10px;' class='hourly-data'>";
 
                                     // Output hourly data for each day, skipping every 3rd hour (index 0, 3, 6, ...)
-                                    foreach ($hourlyTimes as $index => $time) {
-                                        $currentDate = substr($time, 0, 10);
-                                        if ($currentDate === $date && $index % 3 === 0) { // Skip every 3rd hour
+
+
                                             echo "<div class='hour-row'>";
-
-                                            // Extract time portion only (HH:MM)
-                                            $timeOnly = substr($time, 11, 5);
-
-                                            echo "<div><strong>Time:</strong> " . Html::encode($timeOnly) . "</div>";
-                                            echo "<div><strong>Temp:</strong> " . Html::encode($hourlyTemps[$index] ?? 'N/A') . "°C</div>";
-                                            echo "<div><strong>Hum:</strong> " . Html::encode($hourlyHumidity[$index] ?? 'N/A') . "%</div>";
-                                            echo "<div><strong>Wind Sp: </strong> " . Html::encode($hourlyWindSpeed[$index] ?? 'N/A') . " km/h</div>";
+                                            echo "<div><strong>Time:</strong> " .$hourly['timestamp']. "</div>";
+                                            echo "<div><strong>Temp:</strong> " . Html::encode($hourly['temperature'] ?? 'N/A') . "°C</div>";
+                                            echo "<div><strong>Hum:</strong> " . Html::encode( $hourly['humidity'] ?? 'N/A') . "%</div>";
+                                            echo "<div><strong>Wind Sp: </strong> " . Html::encode($hourly['windSpeed'] ?? 'N/A') . " km/h</div>";
                                             echo "</div>";
-                                        }
-                                    }
+
+
 
                                     echo "</div></td></tr>";
                                 }

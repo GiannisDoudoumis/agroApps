@@ -74,7 +74,7 @@ class Location extends \yii\db\ActiveRecord
     public function afterSave($insert, $changedAttributes)
     {
         parent::afterSave($insert, $changedAttributes);
- 
+
         if ($insert) {
             $service = new WeatherApiService();
             try {

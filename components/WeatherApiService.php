@@ -20,7 +20,7 @@ class WeatherApiService
         $queryParams = [
             'key' => $apiKey,
             'q' => "{$latitude},{$longitude}",
-            'days' => 3,
+            'days' => 4,
             'hourly' => 'temperature_2m,precipitation_sum',
             'alerts' => 'yes'
         ];
@@ -64,12 +64,21 @@ class WeatherApiService
     private function parseHourlyData($forecast)
     {
         $hourlyWeatherData = [];
-
+         
         foreach ($forecast['forecastday'] as $forecastDay) {
+
+
             foreach ($forecastDay['hour'] as $hourlyForecast) {
                 $timestamp = isset($hourlyForecast['time'])
                     ? (new DateTime($hourlyForecast['time']))->format("Y-m-d\TH:i")
                     : null;
+
+                $hour = (int)(new DateTime($hourlyForecast['time']))->format("H"); // Extract hour (HH)
+
+                // Keep only hours that are multiples of 3 (00, 03, 06, ..., 21)
+                if ($hour % 3 !== 0) {
+                    continue;
+                }
 
                 $hourlyWeatherData[] = [
                     'timestamp' => $timestamp,
@@ -83,6 +92,7 @@ class WeatherApiService
 
         return $hourlyWeatherData;
     }
+
 
     private function parseDailyData($forecast)
     {

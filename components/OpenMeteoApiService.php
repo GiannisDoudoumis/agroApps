@@ -60,14 +60,36 @@ class OpenMeteoApiService
     private function parseHourlyData($hourly)
     {
         $hourlyData = [];
+        $dates = [];
+
         foreach ($hourly['temperature_2m'] as $index => $temp) {
+            $timestamp = $hourly['time'][$index];
+            $date = substr($timestamp, 0, 10); // Extract date (YYYY-MM-DD)
+            $hour = (int)substr($timestamp, 11, 2); // Extract hour (HH)
+
+            // Keep only hours that are multiples of 3 (00, 03, 06, ..., 21)
+            if ($hour % 3 !== 0) {
+                continue;
+            }
+
+            // Track unique dates
+            if (!in_array($date, $dates)) {
+                $dates[] = $date;
+            }
+
+            // Stop after collecting data for 4 unique days
+            if (count($dates) > 4) {
+                break;
+            }
+
             $hourlyData[] = [
-                'timestamp' => $hourly['time'][$index],
+                'timestamp' => $timestamp,
                 'temperature' => $temp,
                 'humidity' => $hourly['relative_humidity_2m'][$index] ?? null,
                 'windSpeed' => $hourly['wind_speed_10m'][$index] ?? null,
             ];
         }
+
         return $hourlyData;
     }
 
@@ -80,9 +102,13 @@ class OpenMeteoApiService
                 'temperatureMax' => $temp,
                 'precipitation' => $daily['precipitation_sum'][$index] ?? null,
             ];
+            if (count($dailyData) === 4) {
+                break;
+            }
         }
         return $dailyData;
     }
+
 
     private function storeWeatherData(WeatherDataDTO $dto)
     {

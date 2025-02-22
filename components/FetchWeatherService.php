@@ -21,8 +21,8 @@ class FetchWeatherService
             $weatherApiService =  new WeatherApiService();
             $weatherApiService->fetchWeatherData($location);
 
-//            $openMeteoApiService =  new OpenMeteoApiService();
-//            $openMeteoApiService->fetchWeatherData($location);
+            $openMeteoApiService =  new OpenMeteoApiService();
+            $openMeteoApiService->fetchWeatherData($location);
 
             //add new api if you want
         }
