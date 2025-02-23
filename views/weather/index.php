@@ -230,3 +230,21 @@ $this->title = 'Weather';
         <?php endforeach; ?>
     </table>
 <?php endif; ?>
+<script>
+    document.getElementById('location-select').addEventListener('change', function() {
+        var locationId = this.value;
+        var form = document.getElementById('locationFilterForm');
+
+        // Prevent default form submission behavior
+        event.preventDefault();
+
+        // Clear the query parameters and only append the selected location
+        var url = new URL(window.location.href);
+        url.searchParams.delete('location'); // Ensure any existing 'location' parameter is removed
+        url.searchParams.append('location', locationId); // Add the new location parameter
+
+        // Redirect to the updated URL with the new location parameter
+        window.location.href = url.toString();
+    });
+
+</script>
